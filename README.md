@@ -4,12 +4,20 @@ A phone-first, single-page launcher for YouTube Music routine playlists. Tap a
 category, tap a routine, YouTube Music opens on that playlist, cast it
 yourself. No build step, no backend, no accounts.
 
-Four categories out of the box: **Miracle Mornings**, **Kids Routines**,
-**Dinner Blitz**, and **Christmas** (which holds Christmas Dinner Blitz and
-Kids Christmas Morning Routines). Christmas routines intentionally have no
-weekday schedule — the "Today" pin is day-of-week based and Christmas isn't a
-weekly recurrence, so those routines just sit under "All routines" until you
-tap into the category.
+Five categories out of the box: **Miracle Mornings**, **Kids Routines**,
+**Dinner Blitz**, **Christmas** (Christmas Dinner Blitz + Kids Christmas
+Morning Routines), and **Devotions**. Christmas routines intentionally have
+no weekday schedule — the "Today" pin is day-of-week based and Christmas
+isn't a weekly recurrence, so those routines just sit under "All routines"
+until you tap into the category.
+
+**Devotions** works differently from the other four: it's month-scoped, not
+day-scoped, and its playlists come from regular YouTube (not YouTube Music).
+Tapping the Devotions tile leads to a 12-tile month grid instead of a routine
+list, with the current calendar month always pinned large at the top ("This
+Month") and the rest in a small Jan–Dec grid below. Tapping a month shows
+that month's playlists (typically 2). This is driven by a `mode: "month"`
+flag on the category — see [Categories](#categories) below.
 
 ## Files
 
@@ -59,10 +67,15 @@ show. Swap in your real playlists either from inside the app or in source:
 1. Tap the gear icon (top right) to open **Edit Routines**.
 2. Tap **Edit details** under a routine.
 3. Paste the playlist URL or just the bare playlist ID into the **Playlist
-   URL or ID** field — either is accepted, and a pasted URL is normalized to
-   `https://music.youtube.com/playlist?list=<ID>` automatically (stray
-   query params like `si=` are stripped).
-4. Set the category, speaker group, and scheduled days as needed.
+   URL or ID** field — either is accepted. A pasted full URL is normalized
+   to `.../playlist?list=<ID>` (stray query params like `si=` are stripped)
+   while keeping whichever YouTube surface you pasted from — a
+   `music.youtube.com` link stays on YouTube Music, a `youtube.com` link
+   (e.g. for Devotions) stays on regular YouTube. A bare ID with no URL
+   defaults to YouTube Music.
+4. Set the category and cast target. Weekday-mode categories (everything
+   except Devotions) get a day-of-week picker; Devotions gets a month picker
+   instead.
 5. Use **+ Add routine** to add new ones, the ↑/↓ buttons to reorder within a
    category, and ✕ to delete.
 
@@ -99,13 +112,21 @@ const CATEGORIES = [
   { id: "miracle",   name: "Miracle Mornings" },
   { id: "kids",      name: "Kids Routines" },
   { id: "blitz",     name: "Dinner Blitz" },
-  { id: "christmas", name: "Christmas" }
+  { id: "christmas", name: "Christmas" },
+  { id: "devotions", name: "Devotions", mode: "month" }
 ];
 ```
 
 A routine's `category` must match one of these `id`s (falls back to the first
 category if missing or unknown). Add a new category by adding an entry here
 and giving at least one routine that `category` id from the Edit screen.
+
+Omitting `mode` (or any value other than `"month"`) means **weekday mode**:
+the category screen is a flat routine list with a `days` (0=Sun…6=Sat) based
+"Today" section, same as Miracle Mornings / Kids / Dinner Blitz / Christmas.
+Setting `mode: "month"` switches the category screen to the 12-tile month
+grid described above, and routines in it use `month` (1-12) instead of
+`days`.
 
 ## Notes
 

@@ -193,6 +193,43 @@
     font-size: 0.95rem;
   }
 
+  .month-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .month-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    min-height: 64px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+  .month-tile:active { background: var(--surface-2); }
+  .month-tile .m-name { font-size: 0.98rem; font-weight: 700; }
+  .month-tile .m-count { font-size: 0.78rem; color: var(--text-dim); }
+
+  .month-tile.primary {
+    grid-column: 1 / -1;
+    background: var(--accent);
+    border-color: var(--accent);
+    min-height: 76px;
+    padding: 18px 20px;
+  }
+  .month-tile.primary .m-name { color: var(--accent-text); font-size: 1.2rem; }
+  .month-tile.primary .m-count { color: var(--accent-text); opacity: 0.85; }
+  .month-tile.primary:active { filter: brightness(0.92); }
+
   /* Edit screen */
   .field { margin-bottom: 16px; }
   .field label {
@@ -345,11 +382,16 @@
 
   var STORAGE_KEY = "routines-dashboard/v1";
 
+  // mode "weekday" (default): routines are scheduled by day-of-week (`days`),
+  //   category screen is a flat routine list with a "Today" section.
+  // mode "month": routines are scheduled by calendar month (`month`, 1-12),
+  //   category screen is a 12-tile month grid with a "This Month" pin.
   var CATEGORIES = [
     { id: "miracle",   name: "Miracle Mornings" },
     { id: "kids",      name: "Kids Routines" },
     { id: "blitz",     name: "Dinner Blitz" },
-    { id: "christmas", name: "Christmas" }
+    { id: "christmas", name: "Christmas" },
+    { id: "devotions", name: "Devotions", mode: "month" }
   ];
 
   var DEFAULT_ROUTINES = [
@@ -442,8 +484,29 @@
       url: "https://music.youtube.com/playlist?list=PLACEHOLDER_XMAS_KIDS_AM",
       days: [],
       speakerGroup: "Whole House"
+    },
+    {
+      id: "devotion-sept-1",
+      category: "devotions",
+      name: "September Devotion 1",
+      subtitle: "",
+      url: "https://www.youtube.com/playlist?list=PLACEHOLDER_SEPT_DEVO_1",
+      month: 9,
+      speakerGroup: ""
+    },
+    {
+      id: "devotion-sept-2",
+      category: "devotions",
+      name: "September Devotion 2",
+      subtitle: "",
+      url: "https://www.youtube.com/playlist?list=PLACEHOLDER_SEPT_DEVO_2",
+      month: 9,
+      speakerGroup: ""
     }
   ];
+
+  var MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
 
   var DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -493,6 +556,8 @@
     if (!s) return "";
 
     // bare playlist id (YouTube playlist IDs are typically alnum + _ -)
+    // defaults to YouTube Music since that's the common case; a full URL
+    // (see below) keeps whichever YouTube surface it was pasted from.
     if (/^[A-Za-z0-9_-]+$/.test(s) && !/^https?:/i.test(s)) {
       return "https://music.youtube.com/playlist?list=" + s;
     }
@@ -501,7 +566,9 @@
       var u = new URL(s);
       var list = u.searchParams.get("list");
       if (list) {
-        return "https://music.youtube.com/playlist?list=" + list;
+        var isMusic = /(^|\.)music\.youtube\.com$/i.test(u.hostname);
+        var host = isMusic ? "music.youtube.com" : "www.youtube.com";
+        return "https://" + host + "/playlist?list=" + list;
       }
       return s;
     } catch (e) {
@@ -513,8 +580,9 @@
 
   var state = {
     routines: loadRoutines(),
-    screen: "categories", // categories | routines | edit
-    activeCategory: null
+    screen: "categories", // categories | routines | devotion-months | devotion-routines | edit
+    activeCategory: null,
+    activeMonth: null
   };
 
   function render() {
@@ -524,33 +592,45 @@
       app.appendChild(renderCategoriesScreen());
     } else if (state.screen === "routines") {
       app.appendChild(renderRoutinesScreen(state.activeCategory));
+    } else if (state.screen === "devotion-months") {
+      app.appendChild(renderDevotionMonthsScreen(state.activeCategory));
+    } else if (state.screen === "devotion-routines") {
+      app.appendChild(renderDevotionRoutinesScreen(state.activeCategory, state.activeMonth));
     } else if (state.screen === "edit") {
       app.appendChild(renderEditScreen());
     }
   }
 
-  function navigate(screen, categoryId, opts) {
+  function navigate(screen, params, opts) {
+    params = params || {};
     opts = opts || {};
-    state.screen = screen;
-    state.activeCategory = categoryId || null;
+    var historyState = {
+      screen: screen,
+      categoryId: params.categoryId || null,
+      month: params.month || null
+    };
+    state.screen = historyState.screen;
+    state.activeCategory = historyState.categoryId;
+    state.activeMonth = historyState.month;
     if (!opts.replace) {
-      history.pushState({ screen: screen, categoryId: categoryId || null }, "", "");
+      history.pushState(historyState, "", "");
     } else {
-      history.replaceState({ screen: screen, categoryId: categoryId || null }, "", "");
+      history.replaceState(historyState, "", "");
     }
     render();
     window.scrollTo(0, 0);
   }
 
   window.addEventListener("popstate", function (e) {
-    var s = e.state || { screen: "categories", categoryId: null };
+    var s = e.state || { screen: "categories", categoryId: null, month: null };
     state.screen = s.screen;
     state.activeCategory = s.categoryId;
+    state.activeMonth = s.month || null;
     render();
     window.scrollTo(0, 0);
   });
 
-  // ---------- today logic ----------
+  // ---------- today / this-month logic ----------
 
   function todayIndex() {
     return new Date().getDay();
@@ -558,6 +638,14 @@
 
   function isToday(routine) {
     return Array.isArray(routine.days) && routine.days.indexOf(todayIndex()) !== -1;
+  }
+
+  function currentMonth() {
+    return new Date().getMonth() + 1; // 1-12
+  }
+
+  function categoryMode(cat) {
+    return cat && cat.mode === "month" ? "month" : "weekday";
   }
 
   function routinesForCategory(catId) {
@@ -580,17 +668,34 @@
 
     CATEGORIES.forEach(function (cat) {
       var routines = routinesForCategory(cat.id);
-      var todays = routines.filter(isToday);
+      var mode = categoryMode(cat);
 
       var card = el("button", { class: "cat-card", type: "button" });
       card.appendChild(el("span", { class: "cat-name" }, cat.name));
       var count = routines.length;
       card.appendChild(el("span", { class: "cat-meta" }, count + (count === 1 ? " routine" : " routines")));
-      if (todays.length > 0) {
-        var label = todays.length === 1 ? ("● Today: " + todays[0].name) : ("● " + todays.length + " for today");
-        card.appendChild(el("span", { class: "cat-today" }, label));
+
+      if (mode === "month") {
+        var thisMonth = routines.filter(function (r) { return r.month === currentMonth(); });
+        if (thisMonth.length > 0) {
+          var mLabel = thisMonth.length === 1 ? ("● This month: " + thisMonth[0].name) : ("● " + thisMonth.length + " for this month");
+          card.appendChild(el("span", { class: "cat-today" }, mLabel));
+        }
+      } else {
+        var todays = routines.filter(isToday);
+        if (todays.length > 0) {
+          var label = todays.length === 1 ? ("● Today: " + todays[0].name) : ("● " + todays.length + " for today");
+          card.appendChild(el("span", { class: "cat-today" }, label));
+        }
       }
-      card.addEventListener("click", function () { navigate("routines", cat.id); });
+
+      card.addEventListener("click", function () {
+        if (mode === "month") {
+          navigate("devotion-months", { categoryId: cat.id });
+        } else {
+          navigate("routines", { categoryId: cat.id });
+        }
+      });
       list.appendChild(card);
     });
 
@@ -641,6 +746,78 @@
       routines.forEach(function (r) { list.appendChild(renderRoutineButton(r, false)); });
       frag.appendChild(list);
     }
+
+    return frag;
+  }
+
+  // ---------- screen: devotion months (month-mode category, level 2) ----------
+
+  function renderDevotionMonthsScreen(catId) {
+    var frag = document.createDocumentFragment();
+    var cat = CATEGORIES.find(function (c) { return c.id === catId; }) || CATEGORIES[0];
+    var routines = routinesForCategory(cat.id);
+    var thisMonth = currentMonth();
+
+    var back = el("button", { class: "back-btn", type: "button" }, "‹ Back");
+    back.addEventListener("click", function () { navigate("categories", null); });
+    frag.appendChild(back);
+
+    frag.appendChild(el("h1", { style: "font-size:1.3rem; margin: 4px 0 14px;" }, cat.name));
+
+    function countFor(m) {
+      return routines.filter(function (r) { return r.month === m; }).length;
+    }
+
+    frag.appendChild(el("div", { class: "section-heading" }, "This Month"));
+    var pinnedGrid = el("div", { class: "month-grid" });
+    pinnedGrid.appendChild(renderMonthTile(cat.id, thisMonth, countFor(thisMonth), true));
+    frag.appendChild(pinnedGrid);
+
+    frag.appendChild(el("div", { class: "section-heading" }, "All Months"));
+    var grid = el("div", { class: "month-grid" });
+    for (var m = 1; m <= 12; m++) {
+      if (m === thisMonth) continue;
+      grid.appendChild(renderMonthTile(cat.id, m, countFor(m), false));
+    }
+    frag.appendChild(grid);
+
+    return frag;
+  }
+
+  function renderMonthTile(catId, month, count, primary) {
+    var tile = el("button", { class: "month-tile" + (primary ? " primary" : ""), type: "button" });
+    tile.appendChild(el("span", { class: "m-name" }, MONTH_NAMES[month - 1]));
+    tile.appendChild(el("span", { class: "m-count" }, count + (count === 1 ? " playlist" : " playlists")));
+    tile.addEventListener("click", function () { navigate("devotion-routines", { categoryId: catId, month: month }); });
+    return tile;
+  }
+
+  // ---------- screen: devotion routines (month-mode category, level 3) ----------
+
+  function renderDevotionRoutinesScreen(catId, month) {
+    var frag = document.createDocumentFragment();
+    var cat = CATEGORIES.find(function (c) { return c.id === catId; }) || CATEGORIES[0];
+
+    var back = el("button", { class: "back-btn", type: "button" }, "‹ Back");
+    back.addEventListener("click", function () { navigate("devotion-months", { categoryId: catId }); });
+    frag.appendChild(back);
+
+    frag.appendChild(el("h1", { style: "font-size:1.3rem; margin: 4px 0 14px;" }, MONTH_NAMES[month - 1] + " " + cat.name));
+
+    var hint = el("div", { class: "hint" });
+    hint.innerHTML = "Tap a playlist, then tap the <strong>cast icon</strong> and pick your target.";
+    frag.appendChild(hint);
+
+    var routines = routinesForCategory(catId).filter(function (r) { return r.month === month; });
+
+    if (routines.length === 0) {
+      frag.appendChild(el("div", { class: "empty-state" }, "No playlists for " + MONTH_NAMES[month - 1] + " yet. Add one from the edit screen."));
+      return frag;
+    }
+
+    var list = el("div", { class: "routine-list" });
+    routines.forEach(function (r) { list.appendChild(renderRoutineButton(r, false)); });
+    frag.appendChild(list);
 
     return frag;
   }
@@ -780,9 +957,9 @@
       updateRoutine(routine.id, { url: normalizePlaylistUrl(v) });
     }, "https://music.youtube.com/playlist?list=...")));
 
-    form.appendChild(field("Speaker group", textInput(routine.id + "-speaker", routine.speakerGroup || "", function (v) {
+    form.appendChild(field("Cast target", textInput(routine.id + "-speaker", routine.speakerGroup || "", function (v) {
       updateRoutine(routine.id, { speakerGroup: v });
-    }, "e.g. Whole House")));
+    }, "e.g. Whole House, or a TV for video playlists")));
 
     // category picker
     var catField = el("div", { class: "field" });
@@ -793,29 +970,51 @@
       if (effectiveCategory(routine) === c.id) opt.selected = true;
       select.appendChild(opt);
     });
-    select.addEventListener("change", function () { updateRoutine(routine.id, { category: select.value }); });
+    select.addEventListener("change", function () {
+      var patch = { category: select.value };
+      var newCat = CATEGORIES.find(function (c) { return c.id === select.value; });
+      if (categoryMode(newCat) === "month" && !routine.month) patch.month = currentMonth();
+      updateRoutine(routine.id, patch);
+    });
     catField.appendChild(select);
     form.appendChild(catField);
 
-    // day picker
-    var dayField = el("div", { class: "field" });
-    dayField.appendChild(el("label", {}, "Scheduled days"));
-    var dayPicker = el("div", { class: "day-picker" });
-    var currentDays = Array.isArray(routine.days) ? routine.days.slice() : [];
-    DAY_LABELS.forEach(function (label, idx) {
-      var pressed = currentDays.indexOf(idx) !== -1;
-      var chip = el("button", { type: "button", class: "day-chip", "aria-pressed": pressed ? "true" : "false" }, label);
-      chip.addEventListener("click", function () {
-        var days = Array.isArray(routine.days) ? routine.days.slice() : [];
-        var pos = days.indexOf(idx);
-        if (pos === -1) days.push(idx); else days.splice(pos, 1);
-        updateRoutine(routine.id, { days: days });
-        chip.setAttribute("aria-pressed", pos === -1 ? "true" : "false");
+    // day picker (weekday-mode categories) or month picker (month-mode categories)
+    var currentCat = CATEGORIES.find(function (c) { return c.id === effectiveCategory(routine); });
+    if (categoryMode(currentCat) === "month") {
+      var monthField = el("div", { class: "field" });
+      monthField.appendChild(el("label", { for: routine.id + "-month" }, "Month"));
+      var monthSelect = el("select", { id: routine.id + "-month" });
+      MONTH_NAMES.forEach(function (name, idx) {
+        var opt = el("option", { value: String(idx + 1) }, name);
+        if (routine.month === idx + 1) opt.selected = true;
+        monthSelect.appendChild(opt);
       });
-      dayPicker.appendChild(chip);
-    });
-    dayField.appendChild(dayPicker);
-    form.appendChild(dayField);
+      monthSelect.addEventListener("change", function () {
+        updateRoutine(routine.id, { month: parseInt(monthSelect.value, 10) });
+      });
+      monthField.appendChild(monthSelect);
+      form.appendChild(monthField);
+    } else {
+      var dayField = el("div", { class: "field" });
+      dayField.appendChild(el("label", {}, "Scheduled days"));
+      var dayPicker = el("div", { class: "day-picker" });
+      var currentDays = Array.isArray(routine.days) ? routine.days.slice() : [];
+      DAY_LABELS.forEach(function (label, idx) {
+        var pressed = currentDays.indexOf(idx) !== -1;
+        var chip = el("button", { type: "button", class: "day-chip", "aria-pressed": pressed ? "true" : "false" }, label);
+        chip.addEventListener("click", function () {
+          var days = Array.isArray(routine.days) ? routine.days.slice() : [];
+          var pos = days.indexOf(idx);
+          if (pos === -1) days.push(idx); else days.splice(pos, 1);
+          updateRoutine(routine.id, { days: days });
+          chip.setAttribute("aria-pressed", pos === -1 ? "true" : "false");
+        });
+        dayPicker.appendChild(chip);
+      });
+      dayField.appendChild(dayPicker);
+      form.appendChild(dayField);
+    }
 
     details.appendChild(form);
     row.appendChild(details);
@@ -896,13 +1095,15 @@
   }
 
   function addRoutine(catId) {
+    var cat = CATEGORIES.find(function (c) { return c.id === catId; });
     var newRoutine = {
       id: uid(),
       category: catId,
-      name: "New Routine",
+      name: categoryMode(cat) === "month" ? "New Devotion" : "New Routine",
       subtitle: "",
       url: "",
       days: [],
+      month: categoryMode(cat) === "month" ? currentMonth() : null,
       speakerGroup: ""
     };
     state.routines.push(newRoutine);
