@@ -395,114 +395,51 @@
   ];
 
   var DEFAULT_ROUTINES = [
-    {
-      id: "mon-miracle",
-      category: "miracle",
-      name: "Monday Miracle Morning",
-      subtitle: "~25 min",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_MON_MIRACLE",
-      days: [1],
-      speakerGroup: "Whole House"
-    },
-    {
-      id: "wed-miracle",
-      category: "miracle",
-      name: "Wednesday Miracle Morning",
-      subtitle: "~25 min",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_WED_MIRACLE",
-      days: [3],
-      speakerGroup: "Whole House"
-    },
-    {
-      id: "weekend-miracle",
-      category: "miracle",
-      name: "Weekend Miracle Morning",
-      subtitle: "~40 min, slower",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_WKND_MIRACLE",
-      days: [0, 6],
-      speakerGroup: "Whole House"
-    },
-    {
-      id: "tue-kids",
-      category: "kids",
-      name: "Tuesday Kids",
-      subtitle: "",
-      url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-CI4VFRsM-AFdj3yYnAzne",
-      days: [2],
-      speakerGroup: "Whole House"
-    },
-    {
-      id: "wed-kids",
-      category: "kids",
-      name: "Wednesday Kids",
-      subtitle: "",
-      url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8ZpkQVP1LU_WfOwn8gqcd_",
-      days: [3],
-      speakerGroup: "Whole House"
-    },
-    {
-      id: "tue-blitz",
-      category: "blitz",
-      name: "Tuesday Dinner Blitz",
-      subtitle: "~20 min, high energy",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_TUE_PM",
-      days: [2],
-      speakerGroup: "Kitchen"
-    },
-    {
-      id: "thu-blitz",
-      category: "blitz",
-      name: "Thursday Dinner Blitz",
-      subtitle: "~20 min, high energy",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_THU_PM",
-      days: [4],
-      speakerGroup: "Kitchen"
-    },
-    {
-      id: "sun-blitz",
-      category: "blitz",
-      name: "Sunday Prep Blitz",
-      subtitle: "~45 min",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_SUN_PM",
-      days: [0],
-      speakerGroup: "Kitchen"
-    },
-    {
-      id: "christmas-blitz",
-      category: "christmas",
-      name: "Christmas Dinner Blitz",
-      subtitle: "",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_XMAS_BLITZ",
-      days: [],
-      speakerGroup: "Kitchen"
-    },
-    {
-      id: "christmas-kids-morning",
-      category: "christmas",
-      name: "Kids Christmas Morning Routines",
-      subtitle: "",
-      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_XMAS_KIDS_AM",
-      days: [],
-      speakerGroup: "Whole House"
-    },
-    {
-      id: "devotion-sept-1",
-      category: "devotions",
-      name: "September Devotion 1",
-      subtitle: "",
-      url: "https://www.youtube.com/playlist?list=PLACEHOLDER_SEPT_DEVO_1",
-      month: 9,
-      speakerGroup: ""
-    },
-    {
-      id: "devotion-sept-2",
-      category: "devotions",
-      name: "September Devotion 2",
-      subtitle: "",
-      url: "https://www.youtube.com/playlist?list=PLACEHOLDER_SEPT_DEVO_2",
-      month: 9,
-      speakerGroup: ""
-    }
+    // Miracle Mornings
+    { id: "mon-miracle", category: "miracle", name: "Monday Miracle Morning", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-iXb_C9_UUDT94VdeDPFtF", days: [1], speakerGroup: "Whole House" },
+    { id: "tue-miracle", category: "miracle", name: "Tuesday Miracle Morning", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_6BN5nyrbWkKpOyxaXh_2g", days: [2], speakerGroup: "Whole House" },
+    { id: "wed-miracle", category: "miracle", name: "Wednesday Miracle Morning", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-sSk9JG8qEjohkaZV76_GN", days: [3], speakerGroup: "Whole House" },
+    { id: "thu-miracle", category: "miracle", name: "Thursday Miracle Morning", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-V6CIzDudxg3RqVQ4ZYAa5", days: [4], speakerGroup: "Whole House" },
+    { id: "fri-miracle", category: "miracle", name: "Friday Miracle Morning", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib93c4H4xZKwxXeDLixwx5ve", days: [5], speakerGroup: "Whole House" },
+    { id: "sat-miracle", category: "miracle", name: "Saturday Miracle Morning", subtitle: "", url: "https://music.youtube.com/playlist?list=PLACEHOLDER_SAT_MIRACLE", days: [6], speakerGroup: "Whole House" },
+
+    // Kids Routines
+    { id: "mon-kids", category: "kids", name: "Monday Kids", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_JzrjVDQ8k8zHUCu-GdAea", days: [1], speakerGroup: "Whole House" },
+    { id: "tue-kids", category: "kids", name: "Tuesday Kids", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-CI4VFRsM-AFdj3yYnAzne", days: [2], speakerGroup: "Whole House" },
+    { id: "wed-kids", category: "kids", name: "Wednesday Kids", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8ZpkQVP1LU_WfOwn8gqcd_", days: [3], speakerGroup: "Whole House" },
+    { id: "thu-kids", category: "kids", name: "Thursday Kids", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_VaU_cjbrVJTwX8qe6f0vx", days: [4], speakerGroup: "Whole House" },
+    { id: "fri-kids", category: "kids", name: "Friday Kids", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-OjWv9jNPG5yFnBheJsWj6", days: [5], speakerGroup: "Whole House" },
+    { id: "sat-kids", category: "kids", name: "Saturday Kids", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_i3l_8KwefgtpP5AUn54QJ", days: [6], speakerGroup: "Whole House" },
+    { id: "sun-kids", category: "kids", name: "Sunday Kids", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8x7_kpbo6X0qBOpiih38gZ", days: [0], speakerGroup: "Whole House" },
+
+    // Dinner Blitz (no Sunday)
+    { id: "mon-blitz", category: "blitz", name: "Monday Dinner Blitz", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-CI4VFRsM-AFdj3yYnAzne", days: [1], speakerGroup: "Kitchen" },
+    { id: "tue-blitz", category: "blitz", name: "Tuesday Dinner Blitz", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_0WpZ3KQUcdmO-zTJJHh7c", days: [2], speakerGroup: "Kitchen" },
+    { id: "wed-blitz", category: "blitz", name: "Wednesday Dinner Blitz", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-VpZP8DzVymZrOVzUsDyDa", days: [3], speakerGroup: "Kitchen" },
+    { id: "thu-blitz", category: "blitz", name: "Thursday Dinner Blitz", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_gJyUJwKbbbMW_HllO_XtH", days: [4], speakerGroup: "Kitchen" },
+    { id: "fri-blitz", category: "blitz", name: "Friday Dinner Blitz", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-aiSsU-rxdT6OvUzbVec75", days: [5], speakerGroup: "Kitchen" },
+    { id: "sat-blitz", category: "blitz", name: "Saturday Dinner Blitz", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-KRVUBq85PIybLa5OQc_06", days: [6], speakerGroup: "Kitchen" },
+
+    // Christmas
+    { id: "mon-christmas", category: "christmas", name: "Monday Christmas", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib9_SM9QzamZw-u42dDlpnUn", days: [1], speakerGroup: "Whole House" },
+    { id: "tue-christmas", category: "christmas", name: "Tuesday Christmas", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-b2CF7Z01PWFzggrItk0RC", days: [2], speakerGroup: "Whole House" },
+    { id: "wed-christmas", category: "christmas", name: "Wednesday Christmas", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib9G59kKI6ku3ygoGaU7PuA3", days: [3], speakerGroup: "Whole House" },
+    { id: "thu-christmas", category: "christmas", name: "Thursday Christmas", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-lwbDD9xvf8JY4dxBtfz_v", days: [4], speakerGroup: "Whole House" },
+    { id: "fri-christmas", category: "christmas", name: "Friday Christmas", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-V6CIzDudxg3RqVQ4ZYAa5", days: [5], speakerGroup: "Whole House" },
+    { id: "sat-christmas", category: "christmas", name: "Saturday Christmas", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib9G59kKI6ku3ygoGaU7PuA3", days: [6], speakerGroup: "Whole House" },
+    { id: "sun-christmas", category: "christmas", name: "Sunday Christmas", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib9oazi97YL0ocC3yEbFJ6Oe", days: [0], speakerGroup: "Whole House" },
+
+    // Devotions (month-mode; Jan-Jul not provided yet, will show 0 playlists)
+    { id: "aug-devo-1", category: "devotions", name: "August Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-r82lgaifko4tOVICD_-IE", month: 8, speakerGroup: "" },
+    { id: "aug-devo-2", category: "devotions", name: "August Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8l9---2rWbJ9p5kht1BB_f", month: 8, speakerGroup: "" },
+    { id: "sept-devo-1", category: "devotions", name: "September Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_muTB3DcFFc5rDkWKagQY_", month: 9, speakerGroup: "" },
+    { id: "sept-devo-2", category: "devotions", name: "September Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8TYHyO_zyVaE0XqpA9QVpa", month: 9, speakerGroup: "" },
+    { id: "oct-devo-1", category: "devotions", name: "October Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8ZhmOci-fklZ8yhehR0ZAo", month: 10, speakerGroup: "" },
+    { id: "oct-devo-2", category: "devotions", name: "October Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-EmoTkulmQ5q_QrRhRnHHX", month: 10, speakerGroup: "" },
+    { id: "nov-devo-1", category: "devotions", name: "November Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-OGXeLtTIDQziT6H6q19Q_", month: 11, speakerGroup: "" },
+    { id: "nov-devo-2", category: "devotions", name: "November Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8nk1fqzI_QVcv_rgdUr6Y6", month: 11, speakerGroup: "" },
+    { id: "dec-devo-1", category: "devotions", name: "December Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8CcH49J_M4-jOxmrpkV6Xu", month: 12, speakerGroup: "" },
+    { id: "dec-devo-2", category: "devotions", name: "December Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_6suT9zk4mpG8KZsA9REIo", month: 12, speakerGroup: "" }
   ];
 
   var MONTH_NAMES = ["January", "February", "March", "April", "May", "June",

@@ -5,19 +5,18 @@ category, tap a routine, YouTube Music opens on that playlist, cast it
 yourself. No build step, no backend, no accounts.
 
 Five categories out of the box: **Miracle Mornings**, **Kids Routines**,
-**Dinner Blitz**, **Christmas** (Christmas Dinner Blitz + Kids Christmas
-Morning Routines), and **Devotions**. Christmas routines intentionally have
-no weekday schedule — the "Today" pin is day-of-week based and Christmas
-isn't a weekly recurrence, so those routines just sit under "All routines"
-until you tap into the category.
+**Dinner Blitz**, **Christmas**, and **Devotions**. The first four are all
+day-of-week rotations (a different playlist per weekday, with today's pinned
+to the top); Dinner Blitz has no Sunday entry and Miracle Mornings currently
+has no Sunday entry either (Saturday's link is still a placeholder).
 
-**Devotions** works differently from the other four: it's month-scoped, not
-day-scoped, and its playlists come from regular YouTube (not YouTube Music).
-Tapping the Devotions tile leads to a 12-tile month grid instead of a routine
-list, with the current calendar month always pinned large at the top ("This
+**Devotions** works differently: it's month-scoped, not day-scoped. Tapping
+the Devotions tile leads to a 12-tile month grid instead of a routine list,
+with the current calendar month always pinned large at the top ("This
 Month") and the rest in a small Jan–Dec grid below. Tapping a month shows
-that month's playlists (typically 2). This is driven by a `mode: "month"`
-flag on the category — see [Categories](#categories) below.
+that month's playlists (currently 2 each for Aug–Dec; Jan–Jul are still
+empty). This is driven by a `mode: "month"` flag on the category — see
+[Categories](#categories) below.
 
 ## Files
 
