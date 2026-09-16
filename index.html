@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Routines</title>
+<meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --surface-2: #eceef1;
+    --text: #14161a;
+    --text-dim: #5b6270;
+    --accent: #3b6ef6;
+    --accent-text: #ffffff;
+    --border: #dadde2;
+    --danger: #d63838;
+    --focus: #3b6ef6;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --surface: #1e2127;
+      --surface-2: #262a32;
+      --text: #f2f3f5;
+      --text-dim: #9ba1ad;
+      --accent: #6d94ff;
+      --accent-text: #0d1117;
+      --border: #33373f;
+      --danger: #ff6b6b;
+      --focus: #6d94ff;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px calc(40px + env(safe-area-inset-bottom));
+  }
+
+  header.topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0 12px;
+    min-height: 44px;
+  }
+
+  header.topbar h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .icon-btn:active { background: var(--surface-2); }
+  .icon-btn:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 8px 4px 8px 0;
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  .hint {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+    line-height: 1.4;
+  }
+  .hint strong { color: var(--text); }
+
+  .card-list, .routine-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .cat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    min-height: 88px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .cat-card:active { background: var(--surface-2); }
+  .cat-card .cat-name { font-size: 1.2rem; font-weight: 700; }
+  .cat-card .cat-meta { font-size: 0.9rem; color: var(--text-dim); }
+  .cat-card .cat-today { font-size: 0.85rem; color: var(--accent); font-weight: 600; }
+
+  .section-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin: 22px 0 10px;
+  }
+  .section-heading:first-child { margin-top: 0; }
+
+  .routine-btn {
+    display: block;
+    width: 100%;
+    min-height: 64px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 18px;
+    color: var(--text);
+    text-decoration: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .routine-btn:active { background: var(--surface-2); }
+  .routine-btn .r-name { font-size: 1.05rem; font-weight: 700; display: block; }
+  .routine-btn .r-sub { font-size: 0.88rem; color: var(--text-dim); display: block; margin-top: 2px; }
+
+  .routine-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    padding: 20px 20px;
+    min-height: 76px;
+  }
+  .routine-btn.primary .r-name { color: var(--accent-text); font-size: 1.2rem; }
+  .routine-btn.primary .r-sub { color: var(--accent-text); opacity: 0.85; }
+  .routine-btn.primary:active { filter: brightness(0.92); }
+
+  .empty-state {
+    color: var(--text-dim);
+    padding: 24px 4px;
+    font-size: 0.95rem;
+  }
+
+  /* Edit screen */
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .field input[type=text], .field select, .field textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  .field textarea { min-height: 100px; resize: vertical; }
+
+  .day-picker {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .day-chip {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 8px 0;
+    width: 44px;
+    text-align: center;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .day-chip[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-text);
+    font-weight: 700;
+  }
+
+  .routine-edit-row, .panel-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .routine-edit-row .row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .routine-edit-row .row-title { font-weight: 700; }
+  .row-actions { display: flex; gap: 6px; }
+  .row-actions button {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .row-actions button.danger { color: var(--danger); }
+
+  details.routine-details summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 6px 0;
+    list-style: none;
+  }
+  details.routine-details summary::-webkit-details-marker { display: none; }
+  details.routine-details[open] summary { margin-bottom: 10px; }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    min-height: 44px;
+  }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .btn.danger { color: var(--danger); border-color: var(--danger); background: var(--surface); }
+  .btn:active { filter: brightness(0.95); }
+
+  .add-routine-btn {
+    width: 100%;
+    border: 1px dashed var(--border);
+    background: none;
+    color: var(--accent);
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    min-height: 56px;
+    margin-top: 4px;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 50;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "routines-dashboard/v1";
+
+  var CATEGORIES = [
+    { id: "miracle",   name: "Miracle Mornings" },
+    { id: "kids",      name: "Kids Routines" },
+    { id: "blitz",     name: "Dinner Blitz" },
+    { id: "christmas", name: "Christmas" }
+  ];
+
+  var DEFAULT_ROUTINES = [
+    {
+      id: "mon-miracle",
+      category: "miracle",
+      name: "Monday Miracle Morning",
+      subtitle: "~25 min",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_MON_MIRACLE",
+      days: [1],
+      speakerGroup: "Whole House"
+    },
+    {
+      id: "wed-miracle",
+      category: "miracle",
+      name: "Wednesday Miracle Morning",
+      subtitle: "~25 min",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_WED_MIRACLE",
+      days: [3],
+      speakerGroup: "Whole House"
+    },
+    {
+      id: "weekend-miracle",
+      category: "miracle",
+      name: "Weekend Miracle Morning",
+      subtitle: "~40 min, slower",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_WKND_MIRACLE",
+      days: [0, 6],
+      speakerGroup: "Whole House"
+    },
+    {
+      id: "tue-kids",
+      category: "kids",
+      name: "Tuesday Kids",
+      subtitle: "",
+      url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-CI4VFRsM-AFdj3yYnAzne",
+      days: [2],
+      speakerGroup: "Whole House"
+    },
+    {
+      id: "wed-kids",
+      category: "kids",
+      name: "Wednesday Kids",
+      subtitle: "",
+      url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8ZpkQVP1LU_WfOwn8gqcd_",
+      days: [3],
+      speakerGroup: "Whole House"
+    },
+    {
+      id: "tue-blitz",
+      category: "blitz",
+      name: "Tuesday Dinner Blitz",
+      subtitle: "~20 min, high energy",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_TUE_PM",
+      days: [2],
+      speakerGroup: "Kitchen"
+    },
+    {
+      id: "thu-blitz",
+      category: "blitz",
+      name: "Thursday Dinner Blitz",
+      subtitle: "~20 min, high energy",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_THU_PM",
+      days: [4],
+      speakerGroup: "Kitchen"
+    },
+    {
+      id: "sun-blitz",
+      category: "blitz",
+      name: "Sunday Prep Blitz",
+      subtitle: "~45 min",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_SUN_PM",
+      days: [0],
+      speakerGroup: "Kitchen"
+    },
+    {
+      id: "christmas-blitz",
+      category: "christmas",
+      name: "Christmas Dinner Blitz",
+      subtitle: "",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_XMAS_BLITZ",
+      days: [],
+      speakerGroup: "Kitchen"
+    },
+    {
+      id: "christmas-kids-morning",
+      category: "christmas",
+      name: "Kids Christmas Morning Routines",
+      subtitle: "",
+      url: "https://music.youtube.com/playlist?list=PLACEHOLDER_XMAS_KIDS_AM",
+      days: [],
+      speakerGroup: "Whole House"
+    }
+  ];
+
+  var DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  // ---------- storage ----------
+
+  function loadRoutines() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return clone(DEFAULT_ROUTINES);
+      var parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || parsed.length === 0) return clone(DEFAULT_ROUTINES);
+      return parsed;
+    } catch (e) {
+      return clone(DEFAULT_ROUTINES);
+    }
+  }
+
+  function saveRoutines(routines) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(routines));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function clone(x) { return JSON.parse(JSON.stringify(x)); }
+
+  function validCategoryId(catId) {
+    return CATEGORIES.some(function (c) { return c.id === catId; });
+  }
+
+  function effectiveCategory(routine) {
+    if (routine.category && validCategoryId(routine.category)) return routine.category;
+    return CATEGORIES[0].id;
+  }
+
+  function uid() {
+    return "r-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  // ---------- URL normalization ----------
+
+  function normalizePlaylistUrl(input) {
+    if (!input) return "";
+    var s = input.trim();
+    if (!s) return "";
+
+    // bare playlist id (YouTube playlist IDs are typically alnum + _ -)
+    if (/^[A-Za-z0-9_-]+$/.test(s) && !/^https?:/i.test(s)) {
+      return "https://music.youtube.com/playlist?list=" + s;
+    }
+
+    try {
+      var u = new URL(s);
+      var list = u.searchParams.get("list");
+      if (list) {
+        return "https://music.youtube.com/playlist?list=" + list;
+      }
+      return s;
+    } catch (e) {
+      return s;
+    }
+  }
+
+  // ---------- state / router ----------
+
+  var state = {
+    routines: loadRoutines(),
+    screen: "categories", // categories | routines | edit
+    activeCategory: null
+  };
+
+  function render() {
+    var app = document.getElementById("app");
+    app.innerHTML = "";
+    if (state.screen === "categories") {
+      app.appendChild(renderCategoriesScreen());
+    } else if (state.screen === "routines") {
+      app.appendChild(renderRoutinesScreen(state.activeCategory));
+    } else if (state.screen === "edit") {
+      app.appendChild(renderEditScreen());
+    }
+  }
+
+  function navigate(screen, categoryId, opts) {
+    opts = opts || {};
+    state.screen = screen;
+    state.activeCategory = categoryId || null;
+    if (!opts.replace) {
+      history.pushState({ screen: screen, categoryId: categoryId || null }, "", "");
+    } else {
+      history.replaceState({ screen: screen, categoryId: categoryId || null }, "", "");
+    }
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  window.addEventListener("popstate", function (e) {
+    var s = e.state || { screen: "categories", categoryId: null };
+    state.screen = s.screen;
+    state.activeCategory = s.categoryId;
+    render();
+    window.scrollTo(0, 0);
+  });
+
+  // ---------- today logic ----------
+
+  function todayIndex() {
+    return new Date().getDay();
+  }
+
+  function isToday(routine) {
+    return Array.isArray(routine.days) && routine.days.indexOf(todayIndex()) !== -1;
+  }
+
+  function routinesForCategory(catId) {
+    return state.routines.filter(function (r) { return effectiveCategory(r) === catId; });
+  }
+
+  // ---------- screen: categories ----------
+
+  function renderCategoriesScreen() {
+    var frag = document.createDocumentFragment();
+
+    var header = el("header", { class: "topbar" });
+    header.appendChild(el("h1", {}, "Routines"));
+    var gear = el("button", { class: "icon-btn", "aria-label": "Edit routines", type: "button" }, "⚙️");
+    gear.addEventListener("click", function () { navigate("edit"); });
+    header.appendChild(gear);
+    frag.appendChild(header);
+
+    var list = el("div", { class: "card-list" });
+
+    CATEGORIES.forEach(function (cat) {
+      var routines = routinesForCategory(cat.id);
+      var todays = routines.filter(isToday);
+
+      var card = el("button", { class: "cat-card", type: "button" });
+      card.appendChild(el("span", { class: "cat-name" }, cat.name));
+      var count = routines.length;
+      card.appendChild(el("span", { class: "cat-meta" }, count + (count === 1 ? " routine" : " routines")));
+      if (todays.length > 0) {
+        var label = todays.length === 1 ? ("● Today: " + todays[0].name) : ("● " + todays.length + " for today");
+        card.appendChild(el("span", { class: "cat-today" }, label));
+      }
+      card.addEventListener("click", function () { navigate("routines", cat.id); });
+      list.appendChild(card);
+    });
+
+    frag.appendChild(list);
+    return frag;
+  }
+
+  // ---------- screen: routines ----------
+
+  function renderRoutinesScreen(catId) {
+    var frag = document.createDocumentFragment();
+    var cat = CATEGORIES.find(function (c) { return c.id === catId; }) || CATEGORIES[0];
+
+    var header = el("header", { class: "topbar" });
+    var back = el("button", { class: "back-btn", type: "button" }, "‹ Back");
+    back.addEventListener("click", function () { navigate("categories", null); });
+    frag.appendChild(back);
+
+    var h1 = el("h1", { style: "font-size:1.3rem; margin: 4px 0 14px;" }, cat.name);
+    frag.appendChild(h1);
+
+    var hint = el("div", { class: "hint" });
+    hint.innerHTML = "Tap a routine, then tap the <strong>cast icon</strong> in YouTube Music and pick your speaker group.";
+    frag.appendChild(hint);
+
+    var routines = routinesForCategory(cat.id);
+
+    if (routines.length === 0) {
+      frag.appendChild(el("div", { class: "empty-state" }, "No routines in this category yet. Add one from the edit screen."));
+      return frag;
+    }
+
+    var today = routines.filter(isToday);
+    var rest = routines.filter(function (r) { return !isToday(r); });
+
+    if (today.length > 0) {
+      frag.appendChild(el("div", { class: "section-heading" }, "Today"));
+      var todayList = el("div", { class: "routine-list" });
+      today.forEach(function (r) { todayList.appendChild(renderRoutineButton(r, true)); });
+      frag.appendChild(todayList);
+
+      frag.appendChild(el("div", { class: "section-heading" }, "All routines"));
+      var restList = el("div", { class: "routine-list" });
+      rest.forEach(function (r) { restList.appendChild(renderRoutineButton(r, false)); });
+      frag.appendChild(restList);
+    } else {
+      var list = el("div", { class: "routine-list" });
+      routines.forEach(function (r) { list.appendChild(renderRoutineButton(r, false)); });
+      frag.appendChild(list);
+    }
+
+    return frag;
+  }
+
+  function renderRoutineButton(routine, primary) {
+    var a = el("a", {
+      class: "routine-btn" + (primary ? " primary" : ""),
+      href: routine.url || "#"
+    });
+    a.appendChild(el("span", { class: "r-name" }, routine.name || "(untitled)"));
+    var subParts = [];
+    if (routine.subtitle) subParts.push(routine.subtitle);
+    if (routine.speakerGroup) subParts.push("Cast to: " + routine.speakerGroup);
+    if (subParts.length) {
+      a.appendChild(el("span", { class: "r-sub" }, subParts.join(" · ")));
+    }
+    if (!routine.url) {
+      a.addEventListener("click", function (e) { e.preventDefault(); showToast("No playlist URL set for this routine yet."); });
+    }
+    return a;
+  }
+
+  // ---------- screen: edit ----------
+
+  function renderEditScreen() {
+    var frag = document.createDocumentFragment();
+
+    var back = el("button", { class: "back-btn", type: "button" }, "‹ Back");
+    back.addEventListener("click", function () { navigate("categories", null); });
+    frag.appendChild(back);
+
+    frag.appendChild(el("h1", { style: "font-size:1.3rem; margin: 4px 0 18px;" }, "Edit Routines"));
+
+    CATEGORIES.forEach(function (cat) {
+      frag.appendChild(el("div", { class: "section-heading" }, cat.name));
+      var routines = routinesForCategory(cat.id);
+
+      if (routines.length === 0) {
+        frag.appendChild(el("div", { class: "empty-state", style: "padding: 4px 4px 8px;" }, "No routines yet."));
+      }
+
+      routines.forEach(function (routine, idxInCat) {
+        frag.appendChild(renderEditRow(routine, idxInCat, routines.length));
+      });
+
+      var addBtn = el("button", { class: "add-routine-btn", type: "button" }, "+ Add routine to " + cat.name);
+      addBtn.addEventListener("click", function () { addRoutine(cat.id); });
+      frag.appendChild(addBtn);
+    });
+
+    // Import / export
+    frag.appendChild(el("div", { class: "section-heading", style: "margin-top:30px;" }, "Backup"));
+    var backupWrap = el("div", { class: "panel-box" });
+    backupWrap.appendChild(el("div", { style: "font-size:0.9rem; color:var(--text-dim); margin-bottom:12px;" },
+      "Export your config to move it to another device, or paste one in to restore it."));
+
+    var btnRow = el("div", { class: "btn-row" });
+    var exportBtn = el("button", { class: "btn", type: "button" }, "Copy config to clipboard");
+    exportBtn.addEventListener("click", exportConfig);
+    var importBtn = el("button", { class: "btn", type: "button" }, "Paste config in");
+    importBtn.addEventListener("click", function () { toggleImportBox(backupWrap); });
+    btnRow.appendChild(exportBtn);
+    btnRow.appendChild(importBtn);
+    backupWrap.appendChild(btnRow);
+
+    var importField = el("div", { class: "field", id: "import-field", hidden: "" });
+    importField.appendChild(el("label", { for: "import-textarea" }, "Paste JSON config"));
+    var ta = el("textarea", { id: "import-textarea", placeholder: "[ { \"id\": ... } ]" });
+    importField.appendChild(ta);
+    var applyBtn = el("button", { class: "btn primary", type: "button", style: "margin-top:10px;" }, "Apply pasted config");
+    applyBtn.addEventListener("click", function () { importConfig(ta.value); });
+    importField.appendChild(applyBtn);
+    backupWrap.appendChild(importField);
+
+    frag.appendChild(backupWrap);
+
+    // Reset
+    var resetBtn = el("button", { class: "btn danger", type: "button", style: "margin-top:18px;" }, "Reset to defaults");
+    resetBtn.addEventListener("click", function () {
+      if (confirm("Reset all routines to the built-in defaults? This discards your edits.")) {
+        state.routines = clone(DEFAULT_ROUTINES);
+        saveRoutines(state.routines);
+        render();
+        showToast("Reset to defaults.");
+      }
+    });
+    frag.appendChild(resetBtn);
+
+    return frag;
+  }
+
+  function toggleImportBox(container) {
+    var box = container.querySelector("#import-field");
+    box.hidden = !box.hidden;
+  }
+
+  function renderEditRow(routine, idxInCat, catLen) {
+    var row = el("div", { class: "routine-edit-row" });
+
+    var top = el("div", { class: "row-top" });
+    top.appendChild(el("span", { class: "row-title" }, routine.name || "(untitled)"));
+
+    var actions = el("div", { class: "row-actions" });
+    var upBtn = el("button", { type: "button", "aria-label": "Move up", disabled: idxInCat === 0 ? "" : null }, "↑");
+    if (idxInCat === 0) upBtn.disabled = true;
+    upBtn.addEventListener("click", function () { moveRoutine(routine.id, -1); });
+    var downBtn = el("button", { type: "button", "aria-label": "Move down" }, "↓");
+    if (idxInCat === catLen - 1) downBtn.disabled = true;
+    downBtn.addEventListener("click", function () { moveRoutine(routine.id, 1); });
+    var delBtn = el("button", { type: "button", class: "danger", "aria-label": "Delete routine" }, "✕");
+    delBtn.addEventListener("click", function () {
+      if (confirm("Delete \"" + (routine.name || "this routine") + "\"?")) {
+        deleteRoutine(routine.id);
+      }
+    });
+    actions.appendChild(upBtn);
+    actions.appendChild(downBtn);
+    actions.appendChild(delBtn);
+    top.appendChild(actions);
+    row.appendChild(top);
+
+    var details = el("details", { class: "routine-details" });
+    var summary = el("summary", {}, "Edit details");
+    details.appendChild(summary);
+
+    var form = el("div");
+
+    form.appendChild(field("Name", textInput(routine.id + "-name", routine.name || "", function (v) {
+      updateRoutine(routine.id, { name: v });
+    })));
+
+    form.appendChild(field("Subtitle (optional)", textInput(routine.id + "-sub", routine.subtitle || "", function (v) {
+      updateRoutine(routine.id, { subtitle: v });
+    })));
+
+    form.appendChild(field("Playlist URL or ID", textInput(routine.id + "-url", routine.url || "", function (v) {
+      updateRoutine(routine.id, { url: normalizePlaylistUrl(v) });
+    }, "https://music.youtube.com/playlist?list=...")));
+
+    form.appendChild(field("Speaker group", textInput(routine.id + "-speaker", routine.speakerGroup || "", function (v) {
+      updateRoutine(routine.id, { speakerGroup: v });
+    }, "e.g. Whole House")));
+
+    // category picker
+    var catField = el("div", { class: "field" });
+    catField.appendChild(el("label", { for: routine.id + "-cat" }, "Category"));
+    var select = el("select", { id: routine.id + "-cat" });
+    CATEGORIES.forEach(function (c) {
+      var opt = el("option", { value: c.id }, c.name);
+      if (effectiveCategory(routine) === c.id) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener("change", function () { updateRoutine(routine.id, { category: select.value }); });
+    catField.appendChild(select);
+    form.appendChild(catField);
+
+    // day picker
+    var dayField = el("div", { class: "field" });
+    dayField.appendChild(el("label", {}, "Scheduled days"));
+    var dayPicker = el("div", { class: "day-picker" });
+    var currentDays = Array.isArray(routine.days) ? routine.days.slice() : [];
+    DAY_LABELS.forEach(function (label, idx) {
+      var pressed = currentDays.indexOf(idx) !== -1;
+      var chip = el("button", { type: "button", class: "day-chip", "aria-pressed": pressed ? "true" : "false" }, label);
+      chip.addEventListener("click", function () {
+        var days = Array.isArray(routine.days) ? routine.days.slice() : [];
+        var pos = days.indexOf(idx);
+        if (pos === -1) days.push(idx); else days.splice(pos, 1);
+        updateRoutine(routine.id, { days: days });
+        chip.setAttribute("aria-pressed", pos === -1 ? "true" : "false");
+      });
+      dayPicker.appendChild(chip);
+    });
+    dayField.appendChild(dayPicker);
+    form.appendChild(dayField);
+
+    details.appendChild(form);
+    row.appendChild(details);
+
+    return row;
+  }
+
+  function field(labelText, inputEl) {
+    var wrap = el("div", { class: "field" });
+    var label = el("label", {}, labelText);
+    wrap.appendChild(label);
+    wrap.appendChild(inputEl);
+    return wrap;
+  }
+
+  function textInput(id, value, onChange, placeholder) {
+    var input = el("input", { type: "text", id: id, value: value });
+    if (placeholder) input.setAttribute("placeholder", placeholder);
+    input.addEventListener("change", function () { onChange(input.value); });
+    return input;
+  }
+
+  // ---------- mutations ----------
+
+  function updateRoutine(id, patch) {
+    var idx = state.routines.findIndex(function (r) { return r.id === id; });
+    if (idx === -1) return;
+    Object.assign(state.routines[idx], patch);
+    saveRoutines(state.routines);
+    // re-render only the row's title in place would be nicer, but a full
+    // re-render is simple and this screen is small; avoid it on every
+    // keystroke by only re-rendering on 'change', not 'input'.
+    renderInPlaceLabelUpdate(id, patch);
+  }
+
+  function renderInPlaceLabelUpdate(id, patch) {
+    if (patch.name !== undefined) {
+      var routine = state.routines.find(function (r) { return r.id === id; });
+      var rows = document.querySelectorAll(".routine-edit-row");
+      rows.forEach(function (row) {
+        var nameInput = row.querySelector("input[id='" + id + "-name']");
+        if (nameInput) {
+          var titleSpan = row.querySelector(".row-title");
+          if (titleSpan) titleSpan.textContent = routine.name || "(untitled)";
+        }
+      });
+    }
+    if (patch.category !== undefined) {
+      render();
+    }
+  }
+
+  function moveRoutine(id, dir) {
+    var routine = state.routines.find(function (r) { return r.id === id; });
+    if (!routine) return;
+    var catId = effectiveCategory(routine);
+    var inCat = state.routines.filter(function (r) { return effectiveCategory(r) === catId; });
+    var pos = inCat.findIndex(function (r) { return r.id === id; });
+    var newPos = pos + dir;
+    if (newPos < 0 || newPos >= inCat.length) return;
+
+    var a = inCat[pos];
+    var b = inCat[newPos];
+    var globalA = state.routines.indexOf(a);
+    var globalB = state.routines.indexOf(b);
+    state.routines[globalA] = b;
+    state.routines[globalB] = a;
+
+    saveRoutines(state.routines);
+    render();
+  }
+
+  function deleteRoutine(id) {
+    state.routines = state.routines.filter(function (r) { return r.id !== id; });
+    saveRoutines(state.routines);
+    render();
+    showToast("Routine deleted.");
+  }
+
+  function addRoutine(catId) {
+    var newRoutine = {
+      id: uid(),
+      category: catId,
+      name: "New Routine",
+      subtitle: "",
+      url: "",
+      days: [],
+      speakerGroup: ""
+    };
+    state.routines.push(newRoutine);
+    saveRoutines(state.routines);
+    render();
+  }
+
+  function exportConfig() {
+    var json = JSON.stringify(state.routines, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(json).then(function () {
+        showToast("Config copied to clipboard.");
+      }, function () {
+        fallbackCopy(json);
+      });
+    } else {
+      fallbackCopy(json);
+    }
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      showToast("Config copied to clipboard.");
+    } catch (e) {
+      showToast("Couldn't copy automatically — select the text manually.");
+    }
+    document.body.removeChild(ta);
+  }
+
+  function importConfig(text) {
+    try {
+      var parsed = JSON.parse(text);
+      if (!Array.isArray(parsed)) throw new Error("not an array");
+      parsed.forEach(function (r) {
+        if (!r.id) r.id = uid();
+        if (!Array.isArray(r.days)) r.days = [];
+      });
+      state.routines = parsed;
+      saveRoutines(state.routines);
+      render();
+      showToast("Config imported.");
+    } catch (e) {
+      showToast("Couldn't parse that JSON.");
+    }
+  }
+
+  // ---------- toast ----------
+
+  var toastTimer = null;
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  // ---------- dom helper ----------
+
+  function el(tag, attrs, text) {
+    var node = document.createElement(tag);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function (k) {
+      if (attrs[k] === null || attrs[k] === undefined) return;
+      if (k === "disabled" && attrs[k] === "") { node.disabled = true; return; }
+      node.setAttribute(k, attrs[k]);
+    });
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  // ---------- init ----------
+
+  history.replaceState({ screen: "categories", categoryId: null }, "", "");
+  render();
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
