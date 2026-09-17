@@ -72,9 +72,10 @@ show. Swap in your real playlists either from inside the app or in source:
    `music.youtube.com` link stays on YouTube Music, a `youtube.com` link
    (e.g. for Devotions) stays on regular YouTube. A bare ID with no URL
    defaults to YouTube Music.
-4. Set the category and cast target. Weekday-mode categories (everything
-   except Devotions) get a day-of-week picker; Devotions gets a month picker
-   instead.
+4. Set the category and (optionally) a cast target — this is just a note to
+   yourself in the Edit screen; it isn't shown on the routine buttons.
+   Weekday-mode categories (everything except Devotions) get a day-of-week
+   picker; Devotions gets a month picker instead.
 5. Use **+ Add routine** to add new ones, the ↑/↓ buttons to reorder within a
    category, and ✕ to delete.
 
@@ -127,9 +128,18 @@ Setting `mode: "month"` switches the category screen to the 12-tile month
 grid described above, and routines in it use `month` (1-12) instead of
 `days`.
 
+## Design
+
+Each category has its own accent color (a colored left edge on its card, and
+that same color on its pinned "Today"/"This Month" button) so the five are
+easy to tell apart at a glance. Colors live as CSS custom properties
+(`--cat-miracle`, `--cat-kids`, etc.) near the top of `index.html`, with
+separate light/dark values — add a `--cat-<id>` pair there for any new
+category, or it just falls back to the neutral border/accent colors.
+
 ## Notes
 
 - Voice/cast control is intentionally not automated — tap the cast icon in
-  YouTube Music yourself and pick the speaker group named in the hint.
+  YouTube Music yourself.
 - If you bump `sw.js`'s cached file list, also bump `CACHE_NAME` inside it so
   returning devices pick up the change instead of serving a stale shell.

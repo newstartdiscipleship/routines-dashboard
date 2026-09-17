@@ -21,6 +21,12 @@
     --border: #dadde2;
     --danger: #d63838;
     --focus: #3b6ef6;
+    --shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 16px rgba(15,23,42,0.06);
+    --cat-miracle: #b45309;
+    --cat-kids: #0f766e;
+    --cat-blitz: #b91c1c;
+    --cat-christmas: #15803d;
+    --cat-devotions: #6d28d9;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
@@ -35,6 +41,12 @@
       --border: #33373f;
       --danger: #ff6b6b;
       --focus: #6d94ff;
+      --shadow: none;
+      --cat-miracle: #fbbf24;
+      --cat-kids: #2dd4bf;
+      --cat-blitz: #f87171;
+      --cat-christmas: #4ade80;
+      --cat-devotions: #a78bfa;
       color-scheme: dark;
     }
   }
@@ -71,10 +83,16 @@
   }
 
   header.topbar h1 {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
     margin: 0;
     flex: 1;
+  }
+
+  main h1 {
+    letter-spacing: -0.01em;
+    font-weight: 800;
   }
 
   .icon-btn {
@@ -90,8 +108,9 @@
     font-size: 1.1rem;
     cursor: pointer;
     flex-shrink: 0;
+    transition: transform 0.08s ease, background 0.08s ease;
   }
-  .icon-btn:active { background: var(--surface-2); }
+  .icon-btn:active { background: var(--surface-2); transform: scale(0.94); }
   .icon-btn:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
@@ -111,18 +130,6 @@
     min-height: 44px;
   }
 
-  .hint {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-size: 0.9rem;
-    color: var(--text-dim);
-    margin-bottom: 18px;
-    line-height: 1.4;
-  }
-  .hint strong { color: var(--text); }
-
   .card-list, .routine-list {
     display: flex;
     flex-direction: column;
@@ -138,17 +145,36 @@
     text-align: left;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
+    border-left: 4px solid var(--cat-accent, var(--border));
+    border-radius: 18px;
+    padding: 20px 22px;
     min-height: 88px;
     color: var(--text);
     font-family: inherit;
     cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.08s ease, background 0.08s ease;
   }
-  .cat-card:active { background: var(--surface-2); }
+  .cat-card:active { background: var(--surface-2); transform: scale(0.985); }
   .cat-card .cat-name { font-size: 1.2rem; font-weight: 700; }
   .cat-card .cat-meta { font-size: 0.9rem; color: var(--text-dim); }
-  .cat-card .cat-today { font-size: 0.85rem; color: var(--accent); font-weight: 600; }
+  .cat-card .cat-today {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--cat-accent, var(--accent));
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .cat-card .cat-today::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
 
   .section-heading {
     font-size: 0.8rem;
@@ -166,26 +192,28 @@
     min-height: 64px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 14px 18px;
+    border-radius: 18px;
+    padding: 16px 20px;
     color: var(--text);
     text-decoration: none;
     font-family: inherit;
     cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.08s ease, background 0.08s ease;
   }
-  .routine-btn:active { background: var(--surface-2); }
+  .routine-btn:active { background: var(--surface-2); transform: scale(0.985); }
   .routine-btn .r-name { font-size: 1.05rem; font-weight: 700; display: block; }
   .routine-btn .r-sub { font-size: 0.88rem; color: var(--text-dim); display: block; margin-top: 2px; }
 
   .routine-btn.primary {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--cat-accent, var(--accent));
+    border-color: var(--cat-accent, var(--accent));
     padding: 20px 20px;
     min-height: 76px;
   }
   .routine-btn.primary .r-name { color: var(--accent-text); font-size: 1.2rem; }
   .routine-btn.primary .r-sub { color: var(--accent-text); opacity: 0.85; }
-  .routine-btn.primary:active { filter: brightness(0.92); }
+  .routine-btn.primary:active { filter: brightness(0.92); transform: scale(0.985); }
 
   .empty-state {
     color: var(--text-dim);
@@ -208,27 +236,29 @@
     min-height: 64px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 12px 14px;
     color: var(--text);
     font-family: inherit;
     cursor: pointer;
     text-align: left;
+    box-shadow: var(--shadow);
+    transition: transform 0.08s ease, background 0.08s ease;
   }
-  .month-tile:active { background: var(--surface-2); }
+  .month-tile:active { background: var(--surface-2); transform: scale(0.985); }
   .month-tile .m-name { font-size: 0.98rem; font-weight: 700; }
   .month-tile .m-count { font-size: 0.78rem; color: var(--text-dim); }
 
   .month-tile.primary {
     grid-column: 1 / -1;
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--cat-accent, var(--accent));
+    border-color: var(--cat-accent, var(--accent));
     min-height: 76px;
     padding: 18px 20px;
   }
   .month-tile.primary .m-name { color: var(--accent-text); font-size: 1.2rem; }
   .month-tile.primary .m-count { color: var(--accent-text); opacity: 0.85; }
-  .month-tile.primary:active { filter: brightness(0.92); }
+  .month-tile.primary:active { filter: brightness(0.92); transform: scale(0.985); }
 
   /* Edit screen */
   .field { margin-bottom: 16px; }
@@ -278,9 +308,10 @@
   .routine-edit-row, .panel-box {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 16px;
     margin-bottom: 14px;
+    box-shadow: var(--shadow);
   }
   .routine-edit-row .row-top {
     display: flex;
@@ -439,7 +470,19 @@
     { id: "nov-devo-1", category: "devotions", name: "November Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-OGXeLtTIDQziT6H6q19Q_", month: 11, speakerGroup: "" },
     { id: "nov-devo-2", category: "devotions", name: "November Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8nk1fqzI_QVcv_rgdUr6Y6", month: 11, speakerGroup: "" },
     { id: "dec-devo-1", category: "devotions", name: "December Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8CcH49J_M4-jOxmrpkV6Xu", month: 12, speakerGroup: "" },
-    { id: "dec-devo-2", category: "devotions", name: "December Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_6suT9zk4mpG8KZsA9REIo", month: 12, speakerGroup: "" }
+    { id: "dec-devo-2", category: "devotions", name: "December Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_6suT9zk4mpG8KZsA9REIo", month: 12, speakerGroup: "" },
+    { id: "jan-devo-1", category: "devotions", name: "January Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_0KKrra8GfTJCrnLecipZH", month: 1, speakerGroup: "" },
+    { id: "jan-devo-2", category: "devotions", name: "January Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_pW8j63Y014iuSJMHhD54O", month: 1, speakerGroup: "" },
+    { id: "feb-devo-1", category: "devotions", name: "February Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib9oeqsPIB90bU76-Up3bPnb", month: 2, speakerGroup: "" },
+    { id: "feb-devo-2", category: "devotions", name: "February Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-ctAwHFBy8s1JJ0XhojIRI", month: 2, speakerGroup: "" },
+    { id: "mar-devo-1", category: "devotions", name: "March Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_7fDeuvQCjoP7PT3IBim-N", month: 3, speakerGroup: "" },
+    { id: "mar-devo-2", category: "devotions", name: "March Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib91vN8I4JHcEskQ8S_kC2cl", month: 3, speakerGroup: "" },
+    { id: "apr-devo-1", category: "devotions", name: "April Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-_bdm_mctcHsHDn-SpwAnL", month: 4, speakerGroup: "" },
+    { id: "apr-devo-2", category: "devotions", name: "April Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_knQ8tdjrXZfVL9gUe7a49", month: 4, speakerGroup: "" },
+    { id: "may-devo-1", category: "devotions", name: "May Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_QkgW5iVioeDDwVfDxdTnu", month: 5, speakerGroup: "" },
+    { id: "may-devo-2", category: "devotions", name: "May Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib_ePNVv47e64zJYH5seZ_PD", month: 5, speakerGroup: "" },
+    { id: "jun-devo-1", category: "devotions", name: "June Devotion 1", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib-6reGlPpm2W0rkxxSEVypv", month: 6, speakerGroup: "" },
+    { id: "jun-devo-2", category: "devotions", name: "June Devotion 2", subtitle: "", url: "https://music.youtube.com/playlist?list=PLDY9vsZpaib8vkTzmAOr9cw94YgSLMQ-7", month: 6, speakerGroup: "" }
   ];
 
   var MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
@@ -525,16 +568,31 @@
   function render() {
     var app = document.getElementById("app");
     app.innerHTML = "";
+    app.style.removeProperty("--cat-accent");
     if (state.screen === "categories") {
       app.appendChild(renderCategoriesScreen());
     } else if (state.screen === "routines") {
+      setAppAccent(state.activeCategory);
       app.appendChild(renderRoutinesScreen(state.activeCategory));
     } else if (state.screen === "devotion-months") {
+      setAppAccent(state.activeCategory);
       app.appendChild(renderDevotionMonthsScreen(state.activeCategory));
     } else if (state.screen === "devotion-routines") {
+      setAppAccent(state.activeCategory);
       app.appendChild(renderDevotionRoutinesScreen(state.activeCategory, state.activeMonth));
     } else if (state.screen === "edit") {
       app.appendChild(renderEditScreen());
+    }
+  }
+
+  // Category ids with a matching --cat-<id> color defined in CSS. A category
+  // added without one just falls back to the neutral border/accent colors.
+  var CATEGORY_ACCENT_IDS = ["miracle", "kids", "blitz", "christmas", "devotions"];
+
+  function setAppAccent(catId) {
+    var app = document.getElementById("app");
+    if (catId && CATEGORY_ACCENT_IDS.indexOf(catId) !== -1) {
+      app.style.setProperty("--cat-accent", "var(--cat-" + catId + ")");
     }
   }
 
@@ -608,6 +666,9 @@
       var mode = categoryMode(cat);
 
       var card = el("button", { class: "cat-card", type: "button" });
+      if (CATEGORY_ACCENT_IDS.indexOf(cat.id) !== -1) {
+        card.style.setProperty("--cat-accent", "var(--cat-" + cat.id + ")");
+      }
       card.appendChild(el("span", { class: "cat-name" }, cat.name));
       var count = routines.length;
       card.appendChild(el("span", { class: "cat-meta" }, count + (count === 1 ? " routine" : " routines")));
@@ -615,13 +676,13 @@
       if (mode === "month") {
         var thisMonth = routines.filter(function (r) { return r.month === currentMonth(); });
         if (thisMonth.length > 0) {
-          var mLabel = thisMonth.length === 1 ? ("● This month: " + thisMonth[0].name) : ("● " + thisMonth.length + " for this month");
+          var mLabel = thisMonth.length === 1 ? ("This month: " + thisMonth[0].name) : (thisMonth.length + " for this month");
           card.appendChild(el("span", { class: "cat-today" }, mLabel));
         }
       } else {
         var todays = routines.filter(isToday);
         if (todays.length > 0) {
-          var label = todays.length === 1 ? ("● Today: " + todays[0].name) : ("● " + todays.length + " for today");
+          var label = todays.length === 1 ? ("Today: " + todays[0].name) : (todays.length + " for today");
           card.appendChild(el("span", { class: "cat-today" }, label));
         }
       }
@@ -651,12 +712,8 @@
     back.addEventListener("click", function () { navigate("categories", null); });
     frag.appendChild(back);
 
-    var h1 = el("h1", { style: "font-size:1.3rem; margin: 4px 0 14px;" }, cat.name);
+    var h1 = el("h1", { style: "font-size:1.3rem; margin: 4px 0 20px;" }, cat.name);
     frag.appendChild(h1);
-
-    var hint = el("div", { class: "hint" });
-    hint.innerHTML = "Tap a routine, then tap the <strong>cast icon</strong> in YouTube Music and pick your speaker group.";
-    frag.appendChild(hint);
 
     var routines = routinesForCategory(cat.id);
 
@@ -739,11 +796,7 @@
     back.addEventListener("click", function () { navigate("devotion-months", { categoryId: catId }); });
     frag.appendChild(back);
 
-    frag.appendChild(el("h1", { style: "font-size:1.3rem; margin: 4px 0 14px;" }, MONTH_NAMES[month - 1] + " " + cat.name));
-
-    var hint = el("div", { class: "hint" });
-    hint.innerHTML = "Tap a playlist, then tap the <strong>cast icon</strong> and pick your target.";
-    frag.appendChild(hint);
+    frag.appendChild(el("h1", { style: "font-size:1.3rem; margin: 4px 0 20px;" }, MONTH_NAMES[month - 1] + " " + cat.name));
 
     var routines = routinesForCategory(catId).filter(function (r) { return r.month === month; });
 
@@ -765,11 +818,8 @@
       href: routine.url || "#"
     });
     a.appendChild(el("span", { class: "r-name" }, routine.name || "(untitled)"));
-    var subParts = [];
-    if (routine.subtitle) subParts.push(routine.subtitle);
-    if (routine.speakerGroup) subParts.push("Cast to: " + routine.speakerGroup);
-    if (subParts.length) {
-      a.appendChild(el("span", { class: "r-sub" }, subParts.join(" · ")));
+    if (routine.subtitle) {
+      a.appendChild(el("span", { class: "r-sub" }, routine.subtitle));
     }
     if (!routine.url) {
       a.addEventListener("click", function (e) { e.preventDefault(); showToast("No playlist URL set for this routine yet."); });
