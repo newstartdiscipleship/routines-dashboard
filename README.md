@@ -141,5 +141,9 @@ category, or it just falls back to the neutral border/accent colors.
 
 - Voice/cast control is intentionally not automated — tap the cast icon in
   YouTube Music yourself.
-- If you bump `sw.js`'s cached file list, also bump `CACHE_NAME` inside it so
-  returning devices pick up the change instead of serving a stale shell.
+- `sw.js` is network-first: it always tries the network first (so edits to
+  `index.html` show up immediately) and only falls back to its cached copy
+  when there's no connection. If you ever change `sw.js` itself (e.g. the
+  shell file list), bump `CACHE_NAME` too so the browser detects the update
+  and clears the old cache — without that bump, browsers may not notice
+  `sw.js` changed and will keep the old service worker running.

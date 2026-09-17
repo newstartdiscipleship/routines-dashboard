@@ -1,6 +1,8 @@
-// Minimal cache-first service worker for the app shell.
-// Bump CACHE_NAME whenever the shell files change so clients pick up updates.
-var CACHE_NAME = "routines-shell-v1";
+// Minimal network-first service worker for the app shell: always try the
+// network so edits show up immediately, fall back to cache when offline.
+// Bump CACHE_NAME whenever this file changes so the browser detects the
+// update and clears out the old cache on activate.
+var CACHE_NAME = "routines-shell-v2";
 var SHELL_FILES = [
   "./",
   "./index.html",
@@ -40,23 +42,23 @@ self.addEventListener("fetch", function (event) {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then(function (response) {
-          if (response && response.ok) {
-            var copy = response.clone();
-            caches.open(CACHE_NAME).then(function (cache) {
-              cache.put(event.request, copy);
-            });
-          }
-          return response;
-        })
-        .catch(function () {
+    fetch(event.request)
+      .then(function (response) {
+        if (response && response.ok) {
+          var copy = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(event.request, copy);
+          });
+        }
+        return response;
+      })
+      .catch(function () {
+        return caches.match(event.request).then(function (cached) {
+          if (cached) return cached;
           if (event.request.mode === "navigate") {
             return caches.match("./index.html");
           }
         });
-    })
+      })
   );
 });
